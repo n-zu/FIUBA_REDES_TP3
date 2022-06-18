@@ -98,7 +98,7 @@ new terminal, where you can run the iperf command.
 ```bash
 # iperf -s -p <port> -i 1
 ```
-### Client
+#### Client
 ```bash
 # iperf -c <server_ip> -p <port> -t <transmission_duration>
 ```
