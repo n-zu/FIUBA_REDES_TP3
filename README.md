@@ -29,7 +29,7 @@ The topology consists of *4* hosts and *n* switches:
 ### Running the topology
 The topology setup file is located at `linear_topo.py`. To run it, do:
 ```bash
-$ sudo python .py
+$ sudo python linear_topo.py
 ```
 
 ## Firewall
@@ -37,9 +37,8 @@ $ sudo python .py
 The code for the firewall is located at `pox/pox/ext/firewall.py`.
 To run it, do:
 ```bash
-$ poetry run ./pox/pox.py log.level --DEBUG openflow.of_01 forwarding.l2_learning firewall -f <firewall_switch_id>
+$ poetry run ./pox/pox.py log.level --DEBUG openflow.of_01 forwarding.l2_learning firewall
 ```
-Where <firewall_switch_id> is the switch ID of the switch you want to run the firewall on.
 
 ### Configuring the firewall
 The firewall is configured by editing the `firewall_rules.py` file.
@@ -47,17 +46,37 @@ For example, if you want to block traffic from h1 to h2 using their
 MAC addresses, you can do:
 ```
 {
-    "eth": [
-        ["00:00:00:00:00:01", "00:00:00:00:00:02"]
+    "rules": [
+        {
+            "eth": ["00:00:00:00:00:01", "00:00:00:00:00:02"]
+        }
     ]
 }
 ```
 Or if you want to block all traffic to TCP port 80, you can do:
 ```
 {
-    "tcp": [
+    "rules": [
         {
-            "dst": 80
+            "tcp": {
+                "dst": "80"
+            }
+        }
+    ]
+}
+```
+Or if you want to block all packets from host 1 such that the destination
+port is 5001, you can do:
+```
+{
+    "rules": [
+        {
+            "ipv4": {
+                "src": "10.0.0.1"
+            },
+            "udp": {
+                "dst": "5001"
+            }
         }
     ]
 }
