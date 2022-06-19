@@ -41,7 +41,7 @@ $ poetry run ./pox/pox.py log.level --DEBUG openflow.of_01 forwarding.l2_learnin
 ```
 
 ### Configuring the firewall
-The firewall is configured by editing the `firewall_rules.py` file.
+The firewall is configured by editing the `firewall_rules.json` file.
 For example, if you want to block traffic from h1 to h2 using their
 MAC addresses, you can do:
 ```
