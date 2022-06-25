@@ -18,6 +18,9 @@ $ poetry shell
 
 Visit the [mininet documentation](http://mininet.org/download/) to learn how to get started with Mininet.
 
+> note: when using virtualbox you might need to change the Network Adapter to "Bridged"
+> ( if your ip looks like 10.0.x.x rather than 192.168.x.x )
+
 ## Initiating the project
 
 ```bash
