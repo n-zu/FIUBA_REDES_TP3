@@ -8,7 +8,8 @@ from pox.lib.addresses import EthAddr, IPAddr
 from pox.lib.revent.revent import EventMixin
 import json
 
-rules_json = json.load(open('firewall_rules.json'))
+with open('firewall_rules.json') as rules:
+    rules_json = json.load(rules)
 
 
 def add_ipv4_rule(rule, block):
