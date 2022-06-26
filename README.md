@@ -18,8 +18,8 @@ $ poetry shell
 
 Visit the [mininet documentation](http://mininet.org/download/) to learn how to get started with Mininet.
 
-
 #### Notes
+
 - when using a vm, you might want to disable `virtualenvs.in-project`
 - when using virtualbox, you need to forward a port to connect to the vm (NAT adapter)
 
@@ -63,19 +63,21 @@ To run it, do:
 $ poetry run ./pox/pox.py log.level --DEBUG openflow.of_01 forwarding.l2_learning firewall
 ```
 
+You may add `--rules={rules file}` at the end to change the source of the rules.
+
 ### Configuring the firewall
 
-The firewall is configured by editing the `firewall_rules.json` file.
+The firewall is configured by editing the `firewall_rules.json` file by default.
 For example, if you want to block traffic from h1 to h2 using their
 MAC addresses, you can do:
 
 ```json
 {
-    "rules": [
-        {
-            "eth": ["00:00:00:00:00:01", "00:00:00:00:00:02"]
-        }
-    ]
+  "rules": [
+    {
+      "eth": ["00:00:00:00:00:01", "00:00:00:00:00:02"]
+    }
+  ]
 }
 ```
 
@@ -83,13 +85,13 @@ Or if you want to block all traffic to TCP port 80, you can do:
 
 ```json
 {
-    "rules": [
-        {
-            "tcp": {
-                "dst": "80"
-            }
-        }
-    ]
+  "rules": [
+    {
+      "tcp": {
+        "dst": "80"
+      }
+    }
+  ]
 }
 ```
 
@@ -98,16 +100,16 @@ port is 5001, you can do:
 
 ```json
 {
-    "rules": [
-        {
-            "ipv4": {
-                "src": "10.0.0.1"
-            },
-            "udp": {
-                "dst": "5001"
-            }
-        }
-    ]
+  "rules": [
+    {
+      "ipv4": {
+        "src": "10.0.0.1"
+      },
+      "udp": {
+        "dst": "5001"
+      }
+    }
+  ]
 }
 ```
 
@@ -146,7 +148,6 @@ For more information, see: [How to use iperf over mininet?](http://csie.nqu.edu.
 
 - [POX](https://noxrepo.github.io/pox-doc/html/)
 - [Iperf](https://iperf.fr/)
-
 
 ### Troubleshooting
 
