@@ -2,7 +2,7 @@
 
 ## Install dependencies
 
-```bash
+```console
 $ pip3 install poetry
 $ poetry config virtualenvs.in-project true
 $ poetry install
@@ -10,7 +10,7 @@ $ poetry install
 
 If the dependencies are not recognized, you can manually switch to the venv them by running the following command:
 
-```
+```console
 $ poetry shell
 ```
 
@@ -18,12 +18,14 @@ $ poetry shell
 
 Visit the [mininet documentation](http://mininet.org/download/) to learn how to get started with Mininet.
 
-> note: when using virtualbox you might need to change the Network Adapter to "Bridged"
-> ( if your ip looks like 10.0.x.x rather than 192.168.x.x )
+
+#### Notes
+- when using a vm, you might want to disable `virtualenvs.in-project`
+- when using virtualbox, you need to forward a port to connect to the vm (NAT adapter)
 
 ## Initiating the project
 
-```bash
+```console
 $ poetry init
 ```
 
@@ -46,7 +48,7 @@ The topology consists of _4_ hosts and _n_ switches:
 
 The topology setup file is located at `linear_topo.py`. To run it, do:
 
-```bash
+```console
 $ sudo python linear_topo.py
 ```
 
@@ -57,7 +59,7 @@ $ sudo python linear_topo.py
 The code for the firewall is located at `pox/pox/ext/firewall.py`.
 To run it, do:
 
-```bash
+```console
 $ poetry run ./pox/pox.py log.level --DEBUG openflow.of_01 forwarding.l2_learning firewall
 ```
 
@@ -67,7 +69,7 @@ The firewall is configured by editing the `firewall_rules.json` file.
 For example, if you want to block traffic from h1 to h2 using their
 MAC addresses, you can do:
 
-```
+```json
 {
     "rules": [
         {
@@ -79,7 +81,7 @@ MAC addresses, you can do:
 
 Or if you want to block all traffic to TCP port 80, you can do:
 
-```
+```json
 {
     "rules": [
         {
@@ -94,7 +96,7 @@ Or if you want to block all traffic to TCP port 80, you can do:
 Or if you want to block all packets from host 1 such that the destination
 port is 5001, you can do:
 
-```
+```json
 {
     "rules": [
         {
@@ -109,7 +111,7 @@ port is 5001, you can do:
 }
 ```
 
-Although it is obvious, note that the firwall will only block traffic
+Although it is obvious, note that the firewall will only block traffic
 if the packet passes through the firewall. If you set the firewall in
 the switch s1, and block traffic from h3 to h4, thet it won't block.
 
@@ -119,7 +121,7 @@ the switch s1, and block traffic from h3 to h4, thet it won't block.
 
 In the mininet console, run:
 
-```bash
+```console
 mininet> xterm hX
 ```
 
@@ -128,14 +130,14 @@ new terminal, where you can run the iperf command.
 
 #### Server
 
-```bash
-# iperf -s -p <port> -i 1
+```console
+$ iperf -s -p <port> -i 1
 ```
 
 #### Client
 
-```bash
-# iperf -c <server_ip> -p <port> -t <transmission_duration>
+```console
+$ iperf -c <server_ip> -p <port> -t <transmission_duration>
 ```
 
 For more information, see: [How to use iperf over mininet?](http://csie.nqu.edu.tw/smallko/sdn/iperf_mininet.htm)
@@ -144,3 +146,44 @@ For more information, see: [How to use iperf over mininet?](http://csie.nqu.edu.
 
 - [POX](https://noxrepo.github.io/pox-doc/html/)
 - [Iperf](https://iperf.fr/)
+
+
+### Troubleshooting
+
+#### Error creating interface (File exists)
+
+Error:
+
+```
+Traceback (most recent call last):
+  File "linear_topo.py", line 53, in <module>
+    main()
+  File "linear_topo.py", line 49, in main
+    linear_topo(n_switches)
+  File "linear_topo.py", line 27, in linear_topo
+    net.addLink(switches[i], switches[i + 1])
+  File "/usr/local/lib/python3.8/dist-packages/mininet/net.py", line 406, in addLink
+    link = cls( node1, node2, **options )
+  File "/usr/local/lib/python3.8/dist-packages/mininet/link.py", line 456, in __init__
+    self.makeIntfPair( intfName1, intfName2, addr1, addr2,
+  File "/usr/local/lib/python3.8/dist-packages/mininet/link.py", line 501, in makeIntfPair
+    return makeIntfPair( intfname1, intfname2, addr1, addr2, node1, node2,
+  File "/usr/local/lib/python3.8/dist-packages/mininet/util.py", line 270, in makeIntfPair
+    raise Exception( "Error creating interface pair (%s,%s): %s " %
+Exception: Error creating interface pair (s1-eth1,s2-eth1): RTNETLINK answers: File exists
+```
+
+Solution:
+
+You can see the open interfaces with:
+
+```console
+$ ip link
+```
+
+And delete the conflicting interfaces:
+
+```console
+$ sudo ip link delete s1-eth1
+$ sudo ip link delete s2-eth1
+```
