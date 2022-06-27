@@ -1,5 +1,5 @@
 from glob import glob
-from logging import info, error
+from logging import info, warning, error
 import pox.openflow.libopenflow_01 as of
 import pox.lib.packet as pkt
 
@@ -13,19 +13,41 @@ rules_json = r'{"rules": []}'
 DEFAULT_RULES = "firewall_rules.json"
 
 
-def add_ipv4_rule(rule, block):
-    block.dl_type = pkt.ethernet.IP_TYPE
+def _add_tos(block, tos):
+    if isinstance(tos, int) and tos in range(0, 256):
+        block.nw_tos = tos
+    else:
+        warning("Invalid TOS value: " + str(tos) + ", ignoring it")
 
+
+def _add_ip_rule(rule, block):
     if isinstance(rule, dict):
         if "src" in rule:
             block.nw_src = str(rule["src"])
         if "dst" in rule:
             block.nw_dst = str(rule["dst"])
+        if "tos" in rule:
+            _add_tos(block, rule["tos"])
+
     elif isinstance(rule, list):
-        block.nw_src = str(rule[0])
-        block.nw_dst = str(rule[1])
+        try:
+            block.nw_src = str(rule[0])
+            block.nw_dst = str(rule[1])
+            _add_tos(block, rule[2])
+        except IndexError:
+            pass  # the list may be shorter than 3 elements
     else:
-        raise Exception("Invalid rule type")
+        warning("Invalid ip rule format, ignoring it")
+
+
+def add_ipv4_rule(rule, block):
+    block.dl_type = pkt.ethernet.IP_TYPE
+    _add_ip_rule(rule, block)
+
+
+def add_ipv6_rule(rule, block):
+    block.dl_type = pkt.ethernet.IPV6_TYPE
+    _add_ip_rule(rule, block)
 
 
 def add_eth_rule(rule, block):
@@ -38,7 +60,7 @@ def add_eth_rule(rule, block):
         block.dl_src = EthAddr(rule[0])
         block.dl_dst = EthAddr(rule[1])
     else:
-        raise Exception("Invalid rule type")
+        warning("Invalid eth rule format, ignoring it")
 
 
 def add_tcp_rule(rule, block):
@@ -54,7 +76,7 @@ def add_tcp_rule(rule, block):
         block.tp_src = int(rule[0])
         block.tp_dst = int(rule[1])
     else:
-        raise Exception("Invalid rule type")
+        warning("Invalid tcp rule format, ignoring it")
 
 
 def add_udp_rule(rule, block):
@@ -69,7 +91,23 @@ def add_udp_rule(rule, block):
         block.tp_src = int(rule[0])
         block.tp_dst = int(rule[1])
     else:
-        raise Exception("Invalid rule type")
+        warning("Invalid udp rule format, ignoring it")
+
+
+def add_type_rule(rule, block):
+    types = {
+        "ipv4": pkt.ethernet.IP_TYPE,
+        "ipv6": pkt.ethernet.IPV6_TYPE,
+        "arp": pkt.ethernet.ARP_TYPE,
+        "rarp": pkt.ethernet.RARP_TYPE,
+        "vlan": pkt.ethernet.VLAN_TYPE,
+    }
+
+    rule = str(rule)
+    if rule in types:
+        block.dl_type = types[rule]
+    else:
+        warning("Invalid type rule format, ignoring it")
 
 
 def add_rule(event, rule):
@@ -83,6 +121,8 @@ def add_rule(event, rule):
         add_tcp_rule(rule["tcp"], block)
     if "udp" in rule:
         add_udp_rule(rule["udp"], block)
+    if "type" in rule:
+        add_type_rule(rule["type"], block)
 
     block_rule = of.ofp_flow_mod()
     block_rule.match = block
