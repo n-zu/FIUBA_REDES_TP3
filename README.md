@@ -72,8 +72,7 @@ This file contains a list of rules for the firewall.
 
 #### Examples
 
-- Block traffic from h1 to h2 using their
-  MAC addresses
+- Block traffic from h1 to h2 using their MAC addresses
 
   ```json
   {
@@ -85,7 +84,7 @@ This file contains a list of rules for the firewall.
   }
   ```
 
-- Block all traffic to TCP port 80, you can do:
+- Block all traffic to TCP port 80
 
   ```json
   {
