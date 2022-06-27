@@ -40,17 +40,17 @@ def _add_ip_rule(rule, block, name):
     else:
         warning("Invalid " + name + " rule format, ignoring it")
         return
-    debug("Added " + name + " rule: " + str(block))
+    debug("Added " + name + " rule: " + str(rule))
 
 
 def add_ipv4_rule(rule, block):
     block.dl_type = pkt.ethernet.IP_TYPE
-    _add_ip_rule(rule, block)
+    _add_ip_rule(rule, block, "IPv4")
 
 
 def add_ipv6_rule(rule, block):
     block.dl_type = pkt.ethernet.IPV6_TYPE
-    _add_ip_rule(rule, block)
+    _add_ip_rule(rule, block, "IPv6")
 
 
 def add_eth_rule(rule, block):
@@ -65,7 +65,7 @@ def add_eth_rule(rule, block):
     else:
         warning("Invalid eth rule format, ignoring it")
         return
-    debug("Added eth rule: " + str(block))
+    debug("Added eth rule: " + str(rule))
 
 
 def _add_tp_rule(rule, block, name):
@@ -80,7 +80,7 @@ def _add_tp_rule(rule, block, name):
     else:
         warning("Invalid" + name + "rule format, ignoring it")
         return
-    debug("Added " + name + " rule: " + str(block))
+    debug("Added " + name + " rule: " + str(rule))
 
 
 def add_tcp_rule(rule, block):
@@ -110,7 +110,7 @@ def add_type_rule(rule, block):
     else:
         warning("Invalid type rule format, ignoring it")
         return
-    debug("Added type rule: " + str(block))
+    debug("Added type rule: " + str(rule))
 
 
 def add_rule(event, rule):
