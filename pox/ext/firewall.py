@@ -1,5 +1,5 @@
 from glob import glob
-from logging import info, warning, error
+from logging import info, warning, error, debug
 import pox.openflow.libopenflow_01 as of
 import pox.lib.packet as pkt
 
@@ -11,6 +11,7 @@ import json
 
 rules_json = r'{"rules": []}'
 DEFAULT_RULES = "firewall_rules.json"
+firewall_router_id = int(input("Enter the firewall router ID (1, 2, etc): "))
 
 
 def _add_tos(block, tos):
@@ -20,7 +21,7 @@ def _add_tos(block, tos):
         warning("Invalid TOS value: " + str(tos) + ", ignoring it")
 
 
-def _add_ip_rule(rule, block):
+def _add_ip_rule(rule, block, name):
     if isinstance(rule, dict):
         if "src" in rule:
             block.nw_src = str(rule["src"])
@@ -37,7 +38,9 @@ def _add_ip_rule(rule, block):
         except IndexError:
             pass  # the list may be shorter than 3 elements
     else:
-        warning("Invalid ip rule format, ignoring it")
+        warning("Invalid " + name + " rule format, ignoring it")
+        return
+    debug("Added " + name + " rule: " + str(block))
 
 
 def add_ipv4_rule(rule, block):
@@ -61,37 +64,35 @@ def add_eth_rule(rule, block):
         block.dl_dst = EthAddr(rule[1])
     else:
         warning("Invalid eth rule format, ignoring it")
+        return
+    debug("Added eth rule: " + str(block))
+
+
+def _add_tp_rule(rule, block, name):
+    if isinstance(rule, dict):
+        if "src" in rule:
+            block.tp_src = int(rule["src"])
+        if "dst" in rule:
+            block.tp_dst = int(rule["dst"])
+    elif isinstance(rule, list):
+        block.tp_src = int(rule[0])
+        block.tp_dst = int(rule[1])
+    else:
+        warning("Invalid" + name + "rule format, ignoring it")
+        return
+    debug("Added " + name + " rule: " + str(block))
 
 
 def add_tcp_rule(rule, block):
     block.dl_type = pkt.ethernet.IP_TYPE
     block.nw_proto = pkt.ipv4.TCP_PROTOCOL
-    if isinstance(rule, dict):
-        if "src" in rule:
-            info("Adding TCP rule with src: " + str(rule["src"]))
-            block.tp_src = int(rule["src"])
-        if "dst" in rule:
-            block.tp_dst = int(rule["dst"])
-    elif isinstance(rule, list):
-        block.tp_src = int(rule[0])
-        block.tp_dst = int(rule[1])
-    else:
-        warning("Invalid tcp rule format, ignoring it")
+    _add_tp_rule(rule, block, "tcp")
 
 
 def add_udp_rule(rule, block):
     block.dl_type = pkt.ethernet.IP_TYPE
     block.nw_proto = pkt.ipv4.UDP_PROTOCOL
-    if isinstance(rule, dict):
-        if "src" in rule:
-            block.tp_src = int(rule["src"])
-        if "dst" in rule:
-            block.tp_dst = int(rule["dst"])
-    elif isinstance(rule, list):
-        block.tp_src = int(rule[0])
-        block.tp_dst = int(rule[1])
-    else:
-        warning("Invalid udp rule format, ignoring it")
+    _add_tp_rule(rule, block, "udp")
 
 
 def add_type_rule(rule, block):
@@ -103,11 +104,13 @@ def add_type_rule(rule, block):
         "vlan": pkt.ethernet.VLAN_TYPE,
     }
 
-    rule = str(rule)
+    rule = str(rule).lower()
     if rule in types:
         block.dl_type = types[rule]
     else:
         warning("Invalid type rule format, ignoring it")
+        return
+    debug("Added type rule: " + str(block))
 
 
 def add_rule(event, rule):
@@ -138,6 +141,7 @@ class SDNFirewall(EventMixin):
             rules = rules_json["rules"]
             for rule in rules:
                 add_rule(event, rule)
+            info("Firewall set up in switch %s" % firewall_router_id)
 
 
 def launch(rules=DEFAULT_RULES):
@@ -150,8 +154,3 @@ def launch(rules=DEFAULT_RULES):
         error("Could not load rules: " + str(e))
 
     core.registerNew(SDNFirewall)
-
-
-firewall_router_id = int(input("Enter the firewall router ID (1, 2, etc): "))
-
-info("Firewall set up in switch %s" % firewall_router_id)
