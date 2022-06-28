@@ -1,3 +1,4 @@
+from time import sleep
 from linear_topo import linear_topo
 from mininet.cli import CLI
 from mininet.log import setLogLevel, info
@@ -25,9 +26,22 @@ def main():
     # info("*** Running CLI\n")
     # CLI(net)
 
+    sleep(1)  #  wait for iperf to run
+
     info("*** Stopping network")
     net.stop()
 
 
+def logs():
+    with open('logs/server.log', 'r') as f:
+        logs = f.read()
+        print(logs)
+
+    with open('logs/client.log', 'r') as f:
+        logs = f.read()
+        print(logs if logs != '' else 'Client could not connect to server\n')
+
+
 if __name__ == "__main__":
     main()
+    logs()
