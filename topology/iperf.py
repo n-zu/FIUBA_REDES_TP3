@@ -16,14 +16,14 @@ def main():
     info("*** Running Script\n")
 
     server = net.get(f'h{n_server}')
-    print(server.cmd(f'iperf -s -p {port} -i >logs/http_server.log &'))
+    print(server.cmd(f'iperf -s -p {port} >logs/server.log &'))
 
     client = net.get(f'h{n_client}')
     print(client.cmd(
-        f'iperf -c {server.IP()} -p {port} -t 10 >logs/http_client.log &'))
+        f'iperf -c {server.IP()} -p {port} -n 10 >logs/client.log &'))
 
-    info("*** Running CLI\n")
-    CLI(net)
+    # info("*** Running CLI\n")
+    # CLI(net)
 
     info("*** Stopping network")
     net.stop()
