@@ -8,5 +8,5 @@ fi
 
 for i in $(eval echo {1..$1})
 do
-  ip link delete s$i-eth1
+  sudo ip link delete s$i-eth1
 done

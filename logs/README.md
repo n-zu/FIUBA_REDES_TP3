@@ -1,0 +1,1 @@
+this folder needs to exist so that logs can be dumped to it
