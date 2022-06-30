@@ -1,10 +1,9 @@
 #!/bin/bash
 
-# if $1 is not empty
-
+# if $1 is empty
 if [ -z "$1" ]; then
-  sudo python topology/linear_topo.py
+  sudo -E env PATH=$PATH python3 topology/linear_topo.py
   exit 1
 fi
 
-sudo python topology/$1.py
+sudo -E env PATH=$PATH python3 topology/$1.py

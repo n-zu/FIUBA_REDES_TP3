@@ -2,6 +2,13 @@ from time import sleep
 from linear_topo import linear_topo
 from mininet.cli import CLI
 from mininet.log import setLogLevel, info
+from threading import Thread, Event
+
+
+def start_server(server, port, stop):
+    pid = server.cmd(f"iperf -s -p {port} > logs/server.log &")
+    stop.wait()
+    server.cmd(f"kill -SIGINT {pid}")
 
 
 def main():
@@ -16,30 +23,29 @@ def main():
 
     info("*** Running Script\n")
 
-    server = net.get(f'h{n_server}')
-    print(server.cmd(f'iperf -s -p {port} >logs/server.log &'))
+    stop = Event()
 
-    client = net.get(f'h{n_client}')
-    print(client.cmd(
-        f'iperf -c {server.IP()} -p {port} -n 10 >logs/client.log &'))
+    server = net.get(f"h{n_server}")
+    thread = Thread(target=start_server, args=(server, port, stop))
+    thread.start()
 
-    # info("*** Running CLI\n")
-    # CLI(net)
-
-    sleep(1)  #  wait for iperf to run
+    client = net.get(f"h{n_client}")
+    client.cmd(f"iperf -c {server.IP()} -p {port} -t 2 > logs/client.log")
+    stop.set()
+    thread.join()
 
     info("*** Stopping network")
     net.stop()
 
 
 def logs():
-    with open('logs/server.log', 'r') as f:
+    with open("logs/server.log", "r") as f:
         logs = f.read()
         print(logs)
 
-    with open('logs/client.log', 'r') as f:
+    with open("logs/client.log", "r") as f:
         logs = f.read()
-        print(logs if logs != '' else 'Client could not connect to server\n')
+        print(logs if logs != "" else "Client could not connect to server\n")
 
 
 if __name__ == "__main__":

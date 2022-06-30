@@ -15,7 +15,7 @@ firewall_router_id = int(input("Enter the firewall router ID (1, 2, etc): "))
 
 
 def _add_tos(block, tos):
-    if isinstance(tos, int) and tos in range(0, 256):
+    if isinstance(tos, int) and tos in range(0, 64):
         block.nw_tos = tos
     else:
         warning("Invalid TOS value: " + str(tos) + ", ignoring it")
@@ -75,8 +75,11 @@ def _add_tp_rule(rule, block, name):
         if "dst" in rule:
             block.tp_dst = int(rule["dst"])
     elif isinstance(rule, list):
-        block.tp_src = int(rule[0])
-        block.tp_dst = int(rule[1])
+        try:
+            block.tp_src = int(rule[0])
+            block.tp_dst = int(rule[1])
+        except IndexError:
+            pass  # the list may be shorter than 2 elements
     else:
         warning("Invalid" + name + "rule format, ignoring it")
         return
@@ -86,13 +89,13 @@ def _add_tp_rule(rule, block, name):
 def add_tcp_rule(rule, block):
     block.dl_type = pkt.ethernet.IP_TYPE
     block.nw_proto = pkt.ipv4.TCP_PROTOCOL
-    _add_tp_rule(rule, block, "tcp")
+    _add_tp_rule(rule, block, "TCP")
 
 
 def add_udp_rule(rule, block):
     block.dl_type = pkt.ethernet.IP_TYPE
     block.nw_proto = pkt.ipv4.UDP_PROTOCOL
-    _add_tp_rule(rule, block, "udp")
+    _add_tp_rule(rule, block, "UDP")
 
 
 def add_type_rule(rule, block):

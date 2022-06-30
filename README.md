@@ -1,6 +1,6 @@
-# FIUBA_REDES_TP3
+# FIUBA Redes TP3
 
-## Install dependencies
+## Instalar dependencias
 
 ```console
 $ pip3 install poetry
@@ -8,7 +8,7 @@ $ poetry config virtualenvs.in-project true
 $ poetry install
 ```
 
-If the dependencies are not recognized, you can manually switch to the venv them by running the following command:
+Si no se reconocen las dependencias, podes cambiar manualmente al entorno virtual (venv) ejecutando el comando:
 
 ```console
 $ poetry shell
@@ -16,24 +16,18 @@ $ poetry shell
 
 ### Mininet
 
-Visit the [mininet documentation](http://mininet.org/download/) to learn how to get started with Mininet.
+Visitá la [documentación de mininet](http://mininet.org/download/) para comenzar con mininet.
 
-#### Notes
+#### Notas
 
-- when using a vm, you might want to disable `virtualenvs.in-project`
-- when using virtualbox, you need to forward a port to connect to the vm (NAT adapter)
+- No necesitas una VM si usas Linux, solo ejecutá `sudo apt install mininet`
+- Si utilizas VirtualBox, vas a necesitar abrir un puerto para conectarte a la VM (NAT Adapter)
 
-## Initiating the project
+## Topología
 
-```console
-$ poetry init
-```
+### Descripción
 
-## Topology
-
-### Description
-
-The topology consists of _4_ hosts and _n_ switches:
+La topología consiste en _4_ hosts y _n_ switches:
 
 | Host | IP Addr  |     MAC Addr      | Attached to |
 | :--: | :------: | :---------------: | :---------: |
@@ -42,11 +36,11 @@ The topology consists of _4_ hosts and _n_ switches:
 |  h3  | 10.0.0.3 | 00:00:00:00:00:03 |     sn      |
 |  h4  | 10.0.0.4 | 00:00:00:00:00:04 |     sn      |
 
-![topology](resources/topology.png)
+![topología](resources/topology.png)
 
-### Running the topology
+### Ejecutando la topología
 
-The topology setup file is located at `linear_topo.py`. To run it, do:
+El código para crear la topología se encuentra en el archivo `linear_topo.py`. Para ejecutarlo, utilizar:
 
 ```console
 $ sudo python linear_topo.py
@@ -54,25 +48,24 @@ $ sudo python linear_topo.py
 
 ## Firewall
 
-### Running the firewall
+### Ejecutar el firewall
 
-The code for the firewall is located at `pox/pox/ext/firewall.py`.
-To run it, do:
+El código para crear el firewall se encuentra en `pox/pox/ext/firewall.py`.
+Para ejecutarlo, utilizar:
 
 ```console
 $ poetry run ./pox/pox.py log.level --DEBUG openflow.of_01 forwarding.l2_learning firewall
 ```
 
-You may add `--rules={rules file}` at the end to change the source of the rules.
+Se puede añadir el parámetro `--rules={archivo de reglas}` al final del comando para cambiar el archivo de reglas.
 
-### Configuring the firewall
+### Configurando el firewall
 
-The firewall is configured by editing the `firewall_rules.json` file by default.
-This file contains a list of rules for the firewall.
+El firewall se configura editando el archivo `firewall_rules.json` por defecto. Este archivo contiene una lista de reglas para el firewall.
 
-#### Examples
+#### Ejempplos de reglas
 
-- Block traffic from h1 to h2 using their MAC addresses
+- Bloquear todo el tráfico del host 1 al host 2 utilizando sus direcciones MAC
 
   ```json
   {
@@ -84,7 +77,7 @@ This file contains a list of rules for the firewall.
   }
   ```
 
-- Block all traffic to TCP port 80
+- Bloquear todo el tráfico TCP al puerto 80
 
   ```json
   {
@@ -98,7 +91,7 @@ This file contains a list of rules for the firewall.
   }
   ```
 
-- Block all packets from host 1 such that the destination port is 5001
+- Bloquear todo los paquetes originados en el host 1 que utilicen UDP y que el puerto destino sea 5001
 
   ```json
   {
@@ -115,7 +108,7 @@ This file contains a list of rules for the firewall.
   }
   ```
 
-- Block every single IPv6 packet
+- Bloquear todos los paquetes del protocolo IPv6
 
   ```json
   {
@@ -127,7 +120,7 @@ This file contains a list of rules for the firewall.
   }
   ```
 
-- Block IPv4 packets with a TOS of 15 delivered to host 3
+- Bloquear todos los paquetes del protocolo IPv4 con un TOS (Type of Service) de 15, cuyo destino sea el host 3
 
   ```json
   {
@@ -142,22 +135,32 @@ This file contains a list of rules for the firewall.
   }
   ```
 
-Although it is obvious, note that the firewall will only block traffic
-if the packet passes through the firewall. If you set the firewall in
-the switch s1, and block traffic from h3 to h4, thet it won't block.
+Aunque sea obvio, notar que el firewall va a bloquear únicamente el tráfico si el paquete pasa porste. Si se establece el firewall en el switch s1, y se bloquea el tráfico entre el host h3 y h4, entonces no se va a bloquear nada.
 
-## Testing the firewall
+## Scripts
+
+Para ejecutar los scripts, es necesario abrir 2 terminales y un comando en cada una en el orden indicado.
+
+### Pingall
+
+1. `./scripts/l2_learning.sh`
+2. `./scripts/topo.sh pingall`
+   - `number of switches`: **2**
+
+**Resultado esperado:** Se crean los hosts con 2 switches, y son exitosos todos los pings.
 
 ### Iperf
 
-In the mininet console, run:
+#### TCP puerto 80
 
-```console
-mininet> xterm hX
-```
+1. `./scripts/firewall.sh`
+2. `./scripts/topo.sh iperf`
+   - `number of switches`: **2**
+   - `server host number`: **1**
+   - `client host number`: **4**
+   - `port`: **80**
 
-Where X is the number of the host you want to test. This will open a
-new terminal, where you can run the iperf command.
+**Resultado esperado:** Client could not connect to server (firewall bloquea puerto 80)
 
 #### Server
 
