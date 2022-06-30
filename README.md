@@ -160,30 +160,60 @@ Para ejecutar los scripts, es necesario abrir 2 terminales y un comando en cada 
    - `client host number`: **4**
    - `port`: **80**
 
-**Resultado esperado:** Client could not connect to server (firewall bloquea puerto 80)
+**Resultado esperado:** _Client could not connect to server_ (bloqueado por firewall)
 
-#### Server
+#### UDP puerto 80
 
-```console
-$ iperf -s -p <port> -i 1
-```
+1. `./scripts/firewall.sh`
+2. `./scripts/topo.sh iperf_udp`
+   - `number of switches`: **2**
+   - `server host number`: **1**
+   - `client host number`: **4**
+   - `port`: **80**
 
-#### Client
+**Resultado esperado:** Al servidor no le llega ningún paquete (bloqueado por firewall)
 
-```console
-$ iperf -c <server_ip> -p <port> -t <transmission_duration>
-```
+#### Desde el host 1 por UDP puerto 5001
 
-For more information, see: [How to use iperf over mininet?](http://csie.nqu.edu.tw/smallko/sdn/iperf_mininet.htm)
+1. `./scripts/firewall.sh`
+2. `./scripts/topo.sh iperf_udp`
+   - `number of switches`: **2**
+   - `server host number`: **4**
+   - `client host number`: **1**
+   - `port`: **5001**
 
-## Additional resources
+**Resultado esperado:** Al servidor no le llega ningún paquete (bloqueado por firewall)
+
+#### TCP entre host 1 y host 3
+
+1. `./scripts/firewall.sh`
+2. `./scripts/topo.sh iperf`
+   - `number of switches`: **2**
+   - `server host number`: **1**
+   - `client host number`: **3**
+   - `port`: cualquiera
+
+**Resultado esperado:** _Client could not connect to server_ (bloqueado por firewall)
+
+#### Desde el host 1 por UDP a un puerto distinto a 5001
+
+1. `./scripts/firewall.sh`
+2. `./scripts/topo.sh iperf_udp`
+   - `number of switches`: **2**
+   - `server host number`: **4**
+   - `client host number`: **1**
+   - `port`: **5000**
+
+**Resultado esperado:** Al servidor le llega un datagrama (no es bloqueado por firewall)
+
+## Recursos adicionales
 
 - [POX](https://noxrepo.github.io/pox-doc/html/)
 - [Iperf](https://iperf.fr/)
 
-### Troubleshooting
+### Solución de problemas
 
-#### Error creating interface (File exists)
+#### Error al crear interface (File exists)
 
 Error:
 
@@ -206,17 +236,16 @@ Traceback (most recent call last):
 Exception: Error creating interface pair (s1-eth1,s2-eth1): RTNETLINK answers: File exists
 ```
 
-Solution:
+Solucion:
 
-You can see the open interfaces with:
+Las interfaces abrietas puedes verse con el siguiente comando:
 
-```console
-$ ip link
+```
+ip link
 ```
 
-And delete the conflicting interfaces:
+Las interfaces pueden ser eliminadas con el siguiente script, pasandole la cantidad de switches que se utilizaron en la topologia:
 
-```console
-$ sudo ip link delete s1-eth1
-$ sudo ip link delete s2-eth1
+```
+./scripts/delete.sh <n_switches>
 ```

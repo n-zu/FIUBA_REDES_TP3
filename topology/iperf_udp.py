@@ -30,7 +30,8 @@ def main():
     thread.start()
 
     client = net.get(f"h{n_client}")
-    client.cmd(f"iperf -c {server.IP()} -p {port} -n 10 -u > logs/client.log")
+    client.cmd(f"iperf -c {server.IP()} -p {port} -n 10 -u > logs/client.log &")
+    sleep(2)
     stop.set()
     thread.join()
 
