@@ -34,11 +34,7 @@ def linear_topo(n_switches: int):
     info("*** Starting network\n")
     net.start()
 
-    info("*** Running CLI\n")
-    CLI(net)
-
-    info("*** Stopping network")
-    net.stop()
+    return net
 
 
 def main():
@@ -46,7 +42,13 @@ def main():
 
     n_switches = int(input("Enter number of switches: "))
 
-    linear_topo(n_switches)
+    net = linear_topo(n_switches)
+
+    info("*** Running CLI\n")
+    CLI(net)
+
+    info("*** Stopping network")
+    net.stop()
 
 
 if __name__ == "__main__":

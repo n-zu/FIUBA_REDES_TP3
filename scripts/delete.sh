@@ -1,6 +1,12 @@
-# 3 Links
+#!/bin/bash
+# $1 Routers
 
-ip link delete s1-eth1
-# ip link delete s1-eth2
-ip link delete s2-eth1
-ip link delete s2-eth2
+if [ -z "$1" ]; then
+  echo "Usage: sudo ./scripts/delete.sh <n routers>"
+  exit 1
+fi
+
+for i in $(eval echo {1..$1})
+do
+  sudo ip link delete s$i-eth1
+done

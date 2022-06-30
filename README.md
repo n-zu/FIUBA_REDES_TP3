@@ -18,8 +18,8 @@ $ poetry shell
 
 Visit the [mininet documentation](http://mininet.org/download/) to learn how to get started with Mininet.
 
-
 #### Notes
+
 - when using a vm, you might want to disable `virtualenvs.in-project`
 - when using virtualbox, you need to forward a port to connect to the vm (NAT adapter)
 
@@ -63,53 +63,84 @@ To run it, do:
 $ poetry run ./pox/pox.py log.level --DEBUG openflow.of_01 forwarding.l2_learning firewall
 ```
 
+You may add `--rules={rules file}` at the end to change the source of the rules.
+
 ### Configuring the firewall
 
-The firewall is configured by editing the `firewall_rules.json` file.
-For example, if you want to block traffic from h1 to h2 using their
-MAC addresses, you can do:
+The firewall is configured by editing the `firewall_rules.json` file by default.
+This file contains a list of rules for the firewall.
 
-```json
-{
+#### Examples
+
+- Block traffic from h1 to h2 using their MAC addresses
+
+  ```json
+  {
     "rules": [
-        {
-            "eth": ["00:00:00:00:00:01", "00:00:00:00:00:02"]
-        }
+      {
+        "eth": ["00:00:00:00:00:01", "00:00:00:00:00:02"]
+      }
     ]
-}
-```
+  }
+  ```
 
-Or if you want to block all traffic to TCP port 80, you can do:
+- Block all traffic to TCP port 80
 
-```json
-{
+  ```json
+  {
     "rules": [
-        {
-            "tcp": {
-                "dst": "80"
-            }
+      {
+        "tcp": {
+          "dst": "80"
         }
+      }
     ]
-}
-```
+  }
+  ```
 
-Or if you want to block all packets from host 1 such that the destination
-port is 5001, you can do:
+- Block all packets from host 1 such that the destination port is 5001
 
-```json
-{
+  ```json
+  {
     "rules": [
-        {
-            "ipv4": {
-                "src": "10.0.0.1"
-            },
-            "udp": {
-                "dst": "5001"
-            }
+      {
+        "ipv4": {
+          "src": "10.0.0.1"
+        },
+        "udp": {
+          "dst": "5001"
         }
+      }
     ]
-}
-```
+  }
+  ```
+
+- Block every single IPv6 packet
+
+  ```json
+  {
+    "rules": [
+      {
+        "type": "IPv6"
+      }
+    ]
+  }
+  ```
+
+- Block IPv4 packets with a TOS of 15 delivered to host 3
+
+  ```json
+  {
+    "rules": [
+      {
+        "ipv4": {
+          "tos": 15,
+          "dst": "10.0.0.3"
+        }
+      }
+    ]
+  }
+  ```
 
 Although it is obvious, note that the firewall will only block traffic
 if the packet passes through the firewall. If you set the firewall in
@@ -146,7 +177,6 @@ For more information, see: [How to use iperf over mininet?](http://csie.nqu.edu.
 
 - [POX](https://noxrepo.github.io/pox-doc/html/)
 - [Iperf](https://iperf.fr/)
-
 
 ### Troubleshooting
 
