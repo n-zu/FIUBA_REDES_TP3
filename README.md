@@ -211,9 +211,9 @@ Para ejecutar los scripts, es necesario abrir 2 terminales y un comando en cada 
 - [POX](https://noxrepo.github.io/pox-doc/html/)
 - [Iperf](https://iperf.fr/)
 
-### Solución de problemas
+## Solución de problemas
 
-#### Error al crear interface (File exists)
+### Error al crear interface (File exists)
 
 Error:
 
