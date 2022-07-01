@@ -1,6 +1,5 @@
 from time import sleep
 from linear_topo import linear_topo
-from mininet.cli import CLI
 from mininet.log import setLogLevel, info
 from threading import Thread, Event
 

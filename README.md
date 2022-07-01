@@ -8,7 +8,7 @@ $ poetry config virtualenvs.in-project true
 $ poetry install
 ```
 
-Si no se reconocen las dependencias, podes cambiar manualmente al entorno virtual (venv) ejecutando el comando:
+Si no se reconocen las dependencias, podés cambiar manualmente al entorno virtual (venv) ejecutando el comando:
 
 ```console
 $ poetry shell
@@ -20,7 +20,7 @@ Visitá la [documentación de mininet](http://mininet.org/download/) para comenz
 
 #### Notas
 
-- No necesitas una VM si usas Linux, solo ejecutá `sudo apt install mininet`
+- No necesitás una VM si usás Linux, solo ejecutá `sudo apt install mininet`
 - Si utilizas VirtualBox, vas a necesitar abrir un puerto para conectarte a la VM (NAT Adapter)
 
 ## Topología
@@ -63,7 +63,7 @@ Se puede añadir el parámetro `--rules={archivo de reglas}` al final del comand
 
 El firewall se configura editando el archivo `firewall_rules.json` por defecto. Este archivo contiene una lista de reglas para el firewall.
 
-#### Ejempplos de reglas
+#### Ejemplos de reglas
 
 - Bloquear todo el tráfico del host 1 al host 2 utilizando sus direcciones MAC
 

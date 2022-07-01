@@ -1,6 +1,4 @@
 from linear_topo import linear_topo
-from mininet.node import RemoteController
-from mininet.cli import CLI
 from mininet.log import setLogLevel, info
 
 
@@ -13,9 +11,6 @@ def main():
 
     info("*** Running Script\n")
     net.pingAll()
-
-    # info("*** Running CLI\n")
-    # CLI(net)
 
     info("*** Stopping network")
     net.stop()

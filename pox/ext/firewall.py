@@ -1,4 +1,3 @@
-from glob import glob
 from logging import info, warning, error, debug
 import pox.openflow.libopenflow_01 as of
 import pox.lib.packet as pkt
@@ -9,10 +8,9 @@ from pox.lib.addresses import EthAddr, IPAddr
 from pox.lib.revent.revent import EventMixin
 import json
 
-rules_json = r'{"rules": []}'
 DEFAULT_RULES = "firewall_rules.json"
-firewall_router_id = int(input("Enter the firewall router ID (1, 2, etc): "))
-
+rules_json = r'{"rules": []}'
+firewall_router_id = None
 
 def _add_tos(block, tos):
     if isinstance(tos, int) and tos in range(0, 64):
@@ -116,13 +114,19 @@ def add_type_rule(rule, block):
     debug("Added type rule: " + str(rule))
 
 
+def warn_inconsistent_rule(rule):
+    if "tcp" in rule and "udp" in rule:
+        warning("Rule has both TCP and UDP, behavior is undefined")
+
+
 def add_rule(event, rule):
     block = of.ofp_match()
+    warn_inconsistent_rule(rule)
+
     if "eth" in rule:
         add_eth_rule(rule["eth"], block)
     if "ipv4" in rule:
         add_ipv4_rule(rule["ipv4"], block)
-    # TODO: check that tcp and udp are not both present, other checks may be needed
     if "tcp" in rule:
         add_tcp_rule(rule["tcp"], block)
     if "udp" in rule:
@@ -147,8 +151,13 @@ class SDNFirewall(EventMixin):
             info("Firewall set up in switch %s" % firewall_router_id)
 
 
-def launch(rules=DEFAULT_RULES):
+def launch(rules=DEFAULT_RULES, router_id=None):
     global rules_json
+    global firewall_router_id
+    if router_id is None:
+        router_id = input("Enter the firewall router ID (1, 2, etc): ")
+    firewall_router_id = int(router_id)
+
     try:
         with open(rules) as f:
             rules_json = json.load(f)
