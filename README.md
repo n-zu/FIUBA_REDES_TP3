@@ -137,7 +137,20 @@ El firewall se configura editando el archivo `firewall_rules.json` por defecto. 
   }
   ```
 
-Aunque sea obvio, notar que el firewall va a bloquear únicamente el tráfico si el paquete pasa porste. Si se establece el firewall en el switch s1, y se bloquea el tráfico entre el host h3 y h4, entonces no se va a bloquear nada.
+- Bloquear todos los paquetes TCP que entren por la interfaz numero uno
+
+  ```json
+  {
+    "rules": [
+      {
+        "proto": "TCP",
+        "in_port": 1
+      }
+    ]
+  }
+  ```
+
+Aunque sea obvio, notar que el firewall va a bloquear únicamente el tráfico si el paquete pasa por este. Si se establece el firewall en el switch s1, y se bloquea el tráfico entre el host h3 y h4, entonces no se va a bloquear nada.
 
 ## Scripts
 
