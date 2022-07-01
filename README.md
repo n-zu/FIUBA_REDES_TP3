@@ -168,7 +168,7 @@ Para ejecutar los scripts, es necesario abrir 2 terminales y un comando en cada 
 
 #### TCP puerto 80
 
-1. `./scripts/firewall.sh`
+1. `./scripts/firewall.sh --router_id=1`
 2. `./scripts/topo.sh iperf`
    - `number of switches`: **2**
    - `server host number`: **1**
@@ -179,7 +179,7 @@ Para ejecutar los scripts, es necesario abrir 2 terminales y un comando en cada 
 
 #### UDP puerto 80
 
-1. `./scripts/firewall.sh`
+1. `./scripts/firewall.sh --router_id=1`
 2. `./scripts/topo.sh iperf_udp`
    - `number of switches`: **2**
    - `server host number`: **1**
@@ -190,7 +190,7 @@ Para ejecutar los scripts, es necesario abrir 2 terminales y un comando en cada 
 
 #### Desde el host 1 por UDP puerto 5001
 
-1. `./scripts/firewall.sh`
+1. `./scripts/firewall.sh --router_id=1`
 2. `./scripts/topo.sh iperf_udp`
    - `number of switches`: **2**
    - `server host number`: **4**
@@ -201,7 +201,7 @@ Para ejecutar los scripts, es necesario abrir 2 terminales y un comando en cada 
 
 #### TCP entre host 1 y host 3
 
-1. `./scripts/firewall.sh`
+1. `./scripts/firewall.sh --router_id=1`
 2. `./scripts/topo.sh iperf`
    - `number of switches`: **2**
    - `server host number`: **1**
@@ -212,7 +212,7 @@ Para ejecutar los scripts, es necesario abrir 2 terminales y un comando en cada 
 
 #### Desde el host 1 por UDP a un puerto distinto a 5001
 
-1. `./scripts/firewall.sh`
+1. `./scripts/firewall.sh --router_id=1`
 2. `./scripts/topo.sh iperf_udp`
    - `number of switches`: **2**
    - `server host number`: **4**
