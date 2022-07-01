@@ -114,6 +114,29 @@ def add_type_rule(rule, block):
     debug("Added type rule: " + str(rule))
 
 
+def add_proto_rule(rule, block):
+    protos = {
+        "tcp": pkt.ipv4.TCP_PROTOCOL,
+        "udp": pkt.ipv4.UDP_PROTOCOL,
+        "icmp": pkt.ipv4.ICMP_PROTOCOL,
+    }
+    block.dl_type = pkt.ethernet.IP_TYPE
+
+    rule = str(rule).lower()
+    if rule in protos:
+        block.nw_proto = protos[rule]
+    else:
+        warning("Invalid protocol rule format, ignoring it")
+        return
+
+    debug("Added proto rule: " + str(rule))
+
+
+def add_in_port_rule(rule, block):
+    block.in_port = int(rule)
+    debug("Added in_port rule: " + str(rule))
+
+
 def warn_inconsistent_rule(rule):
     if "tcp" in rule and "udp" in rule:
         warning("Rule has both TCP and UDP, behavior is undefined")
@@ -133,6 +156,10 @@ def add_rule(event, rule):
         add_udp_rule(rule["udp"], block)
     if "type" in rule:
         add_type_rule(rule["type"], block)
+    if "proto" in rule:
+        add_proto_rule(rule["proto"], block)
+    if "in_port" in rule:
+        add_in_port_rule(rule["in_port"], block)
 
     block_rule = of.ofp_flow_mod()
     block_rule.match = block
