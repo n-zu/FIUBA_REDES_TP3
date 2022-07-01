@@ -144,7 +144,7 @@ El firewall se configura editando el archivo `firewall_rules.json` por defecto. 
     "rules": [
       {
         "proto": "TCP",
-        "in_port": 1
+        "in_port": "1"
       }
     ]
   }
