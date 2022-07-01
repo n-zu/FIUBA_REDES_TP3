@@ -108,17 +108,19 @@ El firewall se configura editando el archivo `firewall_rules.json` por defecto. 
   }
   ```
 
-- Bloquear todos los paquetes del protocolo IPv6
+- Bloquear todos los paquetes del protocolo ARP. 
 
   ```json
   {
     "rules": [
       {
-        "type": "IPv6"
+        "type": "ARP"
       }
     ]
   }
   ```
+  
+  > Notar que con esta regla van a fallar todos los flujos ya que no se van a poder asociar direcciones IP con las correspondientes MAC
 
 - Bloquear todos los paquetes del protocolo IPv4 con un TOS (Type of Service) de 15, cuyo destino sea el host 3
 
