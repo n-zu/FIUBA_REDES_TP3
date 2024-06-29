@@ -7,7 +7,7 @@ authors = ["efoppiano <efoppiano@fi.uba.ar>"]
 [tool.poetry.dependencies]
 python = "^3.8"
 mininet = "^2.3.0-alpha.6"
-black = "^22.3.0"
+black = "^24.3.0"
 
 [tool.poetry.dev-dependencies]
 
